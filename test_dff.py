@@ -16,15 +16,10 @@ from cocotb.types import LogicArray
 async def dff_simple_test(dut):
     """Test that d propagates to q"""
 
-    # Assert initial output is unknown
-    # verilator does not support 4-state signals
-    # see https://veripool.org/guide/latest/languages.html#unknown-states
-    initial = (
-        LogicArray(0)
-        if cocotb.SIM_NAME.lower().startswith("verilator")
-        else LogicArray("X")
-    )
+    # The initial state of a DFF is undefined, so it should be an X value.
+    initial = LogicArray("X")
     assert LogicArray(dut.q.value) == initial
+
     # Set initial input value to prevent it from floating
     dut.d.value = 0
 
@@ -48,9 +43,7 @@ async def dff_simple_test(dut):
 
 
 def test_simple_dff_runner():
-    # Icarus is the default simulator, but this can be overwritten by the user with an environment variable.
-    sim = os.getenv("SIM", "icarus")
-
+    sim = "icarus"
     # Option to generate waveforms for the user to see in a wave viewer. These aren't necessary when
     # only running tests, so the default is OFF. These are useful for debugging or understanding
     # a design.
